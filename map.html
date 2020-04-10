@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta content="always" name="referrer">
+    <!-- 来源网站-->
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title></title>
+    <link rel="stylesheet" href="./css/shade.css"/>
+    <link rel="stylesheet" href="./css/newCss.css"/>
+    <!--<link rel="shortcut icon" href="favicon.ico">-->
+    <script src="lib/sha1.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=dd51893045d718396a861179ff8afb10&plugin=AMap.Walking"></script>
+    <script>
+        new function () {
+            var _self = this;
+            _self.width = 640;//设置默认最大宽度
+            _self.fontSize = 100;//默认字体大小
+            _self.widthProportion = function () {
+                var p = (document.body && document.body.clientWidth || document.getElementsByTagName("html")[0].offsetWidth) / _self.width;
+                return p > 1 ? 1 : p < 0.4 ? 0.5 : p;
+            };//判断当前屏幕尺寸，设置的最大屏幕宽度之间的比例
+            _self.changePage = function () {
+                document.getElementsByTagName("html")[0].setAttribute("style", "font-size:" + _self.widthProportion() * _self.fontSize + "px !important");
+            }//修改根元素html的font-size的植
+            _self.changePage();
+            window.addEventListener('resize', function () {
+                _self.changePage();
+//                window.location.href = window.location.href;
+            }, false);//侦听屏幕宽度变化
+        };
+        function hengshuping() {
+            if (window.orientation == 180 || window.orientation == 0) {
+                document.getElementById('orientation').style.transform = "rotate(0deg)";
+            }
+            if (window.orientation == 90 || window.orientation == -90) {
+                alert("为了您的用户体验，请勿使用横屏");
+            }
+        }
+        window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", hengshuping, false);
+
+    </script>
+
+</head>
+<body onload="initialize()">
+
+
+
+<!--设置阴影层-->
+<div id="container"></div>
+<div id="mapContainer"></div>
+<input type="hidden" id="lkey" name="lkey" value="chs">
+<div class="ceshi"></div>
+<!--导航地图-->
+<div class="mapBox">
+    <div class="map_box">
+        <ul class="mapUl">
+            <li class="mapli" data="0">高德地图</li>
+            <li class="mapli" data="1">腾讯地图</li>
+        </ul>
+        <div class="cancel">取消</div>
+    </div>
+</div>
+<!--头部菜单栏-->
+<div class="ulBox">
+    <span class="toMenu"></span>
+    <ul>
+        <li data="景点"><span class="guide"></span></li>
+        <!--<li data="景点"><span class=""></span></li>-->
+        <li data="停车场"><span class="park"></span></li>
+        <li data="游客服务"><span class="service"></span></li>
+        <!--<li class="active" data="1"><span class="guide"></span></li>-->
+        <li data="8"><span class="toilet"></span></li>
+        <li data="码头"><span class="wharf"></span></li>
+        <!--<li data="餐饮"><span class="cate"></span></li>-->
+        <li data="购物"><span class="shop"></span></li>
+        <li data="住宿"><span class="stay"></span></li>
+        <li data="厨房"><span class="kitchen"></span></li>
+    </ul>
+</div>
+<div class="tag_list">
+    <div id="handMap" class="itemActive" href="#">
+        <!--<img class="imgLeft imgLeftActive" src="./webmap/shouhuiditu.png" alt=""/>-->
+    </div>
+    <div id="audioGuide" class="itemActive" href="#" data="1">
+        <!--<img class="imgLeft" src="./webmap/yuyindaolan.png" alt=""/>-->
+    </div>
+    <!--<div id="island" href="#">-->
+        <!--&lt;!&ndash;<img class="imgLeft" src="./webmap/daoneidaohang.png" alt=""/>&ndash;&gt;-->
+    <!--</div>-->
+    <div id="wharf" href="#">
+        <!--<img class="imgLeft" src="./webmap/matoudaohang.png" alt=""/>-->
+    </div>
+</div>
+
+<div id="tip3" class="lineinfo" style="display: block;"></div>
+<div id="divtip" class="divtip">
+    
+    <a href="#" id="fullviewA">
+        <img src="./webmap/quanjing.png" id="fullview" class="imgRight ">
+    </a>
+    <a href="#" id="exturl">
+        <img src="./webmap/imgs/Mmap_btn_Activity.png" class="imgRight">
+    </a>
+    <!-- <img id="route" src="./webmap/xianlu.png" class="imgRight imgRight0"> -->
+    <div id="route" src="./webmap/xianlu.png" class="imgRight imgRight0"></div>
+    <a  href="http://fx.showxh.com/m2c/2/list0.jsp?area_id=1003301&order_cust_id=285330&fromid=oH7SKtzjrs36ruiahA7gQw-W_C9g">
+    <img src="./webmap/imgs/btn_ticket.png"  class="imgRight" id="shop">
+    </a>
+    
+    <a href="#" id="qiehuan2">
+        <img src="./webmap/imgs/qiehuan.png" id="qiehuan" class="imgRight ">
+    </a>
+    
+    <!--<a href="#" id="exit">-->
+        <!--<img src="./webmap/goback.png" id="exitBtn" class="" alt="">-->
+    <!--</a>-->
+</div>
+
+<!--语言选择-->
+<div class="rightNav" onclick="languageFun()">
+    <a id="l_name" name="l_name">
+        <img src="./webmap/imgs/language.png" style="width:6.4rem; height:0.8rem; "/>
+    </a>
+    <div class="rightLang" id="rlang" name="rlang">
+        <a href="javascript:void(0)" id="chs"><span>中文</span></a>
+        <a href="javascript:void(0)" id="enu"><span>English</span></a>
+        <a href="javascript:void(0)" id="kor"><span>한국어</span></a>
+        <a href="javascript:void(0)" id="jpn"><span>にほんご</span></a>
+    </div>
+</div>
+
+<div class="bottom">
+    <div id="miss"></div>
+    <div class="slide">
+        <span class="slideBall"></span>
+        <span class="slidego">自动导览</span>
+    </div>
+    <div class="end" id="end">结束导览<span class="shadow"></span></div>
+    <!--<div class="exitFrom">-->
+        <!--<span>-->
+        <!--结束步行导航-->
+        <!--</span>-->
+    <!--</div>-->
+    <div id="box">
+        <div class="startGo" id="startGo">
+            开始自动导航
+        </div>
+
+        <div class="view">解锁</div>
+        <button id="mp3Play" class="mp3Play"></button>
+    </div>
+    <!--<audio id="myaudio3"></audio>-->
+    <audio id="myaudio2"></audio>
+    <audio id="myaudio"></audio>
+</div>
+<!--底部 tool-->
+
+<div class="head" id="head">清除折线</div>
+<div id="line_slider">
+    <div class="line_Box"></div>
+</div>
+<!--<p id="rotate">设备朝向与正北角度差：<span id="alpha">0</span></p>-->
+<div class="b_tool">
+    <!--<div class="sliderLine"></div>-->
+    <div class="sliderBox"></div>
+</div>
+<div id="wx_location"></div>
+
+<!--景点详情页嵌套-->
+<div id="viewDetail">
+    <iframe src="" frameborder="0" scrolling='no' style="overflow: scroll;-webkit-overflow-scrolling: touch;min-width: 100%;*width:100%;width:1px;"></iframe>
+    <div class="toView">
+
+    </div>
+</div>
+
+<!--提示窗口-->
+<div class="mask">
+
+</div>
+<div class="dialog">
+    <h3 class="warning">提示</h3>
+    <div class="content">您不在当前景区或者GPS信号弱，请在该景区或GPS信号稳定地带使用。</div>
+    <div class="ok">确定</div>
+</div>
+<!--厨房界面-->
+<div class="kitchenBox">
+    <div class="kitchenIn">
+        <div class="scrollModel">
+            <!--<div class="sliderKitchen">-->
+                <!--<div class="sliderOutBox">-->
+                    <!--<span class="slider_bar btn"></span>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="kitchenInGo">
+                <div class="headTxt"></div>
+                <span class="kitchenInClose"></span>
+                <img src="" alt="厨房封面" class="kitchenImg">
+                <a href="" class="goKitchen">
+                    <span class="kitchenIcon"></span>
+                    点击进入厨房直播
+                </a>
+                <div class="kitchenInIntro">简介:</div>
+                <div class="kitchenIntro"></div>
+            </div>
+        </div>
+        <!--滑块-->
+
+
+    </div>
+</div>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!--<script src="lib/all.js"></script>-->
+<script>
+    var marker2;
+    function addMarker2() {
+        marker2 = new AMap.Marker({
+            position: (new AMap.LngLat(120.368672000, 30.303212000)),
+            content: "<div class='cate' data='8' nubmer='0'></div>",
+            icon: "./webmap/imgs/cate.svg",
+//            draggable:true,  //点标记可拖拽
+//            cursor:'move',
+//            raiseOnDrag:true //鼠标拖拽点标记时开启点标记离开地图的效果
+        });
+        AMap.event.addListener(marker2, "click", function (e) {
+            sign = e.target.G.content.split("'")[5];
+            if ($(".cate").eq(sign).hasClass("gobig_cate")) {
+                $(".cate").eq(sign).removeClass("gobig_cate")
+            }
+            else {
+                $(".gobig_cate").removeClass("gobig_cate");
+                $(".cate").eq(sign).addClass("gobig_cate");
+                $(".b_tool").hide();
+            }
+            hidLang();
+        })
+        marker2.setMap(mapObj);
+    }
+    var head_url = "http://www.selftourist.cn/";
+    var ret = {
+        "timestamp": new Date().getTime(),
+        "noncestr": Math.random().toString(36).substr(2),
+        "access_token": "",
+        "jsapi_ticket": "",
+        "signature": "",
+        "url": ""
+    };
+    $.ajax({
+        "method": "get",
+//        获取不同的token，这个接口还要改
+        "url": "http://map.worldmaipu.com/api/v1/wx!FindJsApiTicjet.action?appid=wx38104f0ec4313b31",
+        "data": "",
+        "dataType": "jsonp",
+        "success": function (data) {
+            su = data;
+            console.log(su);
+            // ret.access_token = data.data.tokens.accsee_token;
+          //     ret.jsapi_ticket = data.data.tokens.ticket;
+ ret.jsapi_ticket=data.data.ticket;
+            ret.url=document.URL;
+            var string="jsapi_ticket="+ret.jsapi_ticket+"&noncestr="+ret.noncestr+"&timestamp="+ret.timestamp+"&url="+ret.url;
+            ret.url = document.URL;
+            var string = "jsapi_ticket=" + ret.jsapi_ticket + "&noncestr=" + ret.noncestr + "&timestamp=" + ret.timestamp + "&url=" + ret.url;
+            ret.signature = hex_sha1(string);
+            wx.config({
+                debug:false,
+                appId: 'wx38104f0ec4313b31',
+                timestamp: ret.timestamp,
+                nonceStr: ret.noncestr,
+                signature: ret.signature,
+                jsApiList: [
+                    'getLocation',
+                    "onMenuShareTimeline",
+                    "onMenuShareAppMessage",
+                    "onMenuShareQQ",
+                    "onMenuShareWeibo",
+                    "onMenuShareQZone",
+                    "startRecord",
+                    "stopRecord",
+                    "onVoiceRecordEnd",
+                    "playVoice",
+                    "pauseVoice",
+                    "stopVoice",
+                    "onVoicePlayEnd",
+                    "uploadVoice",
+                    "downloadVoice",
+                    "chooseImage",
+                    "previewImage",
+                    "uploadImage",
+                    "downloadImage",
+                    "translateVoice",
+                    "getNetworkType",
+                    "openLocation",
+                    "getLocation",
+                    "hideOptionMenu",
+                    "showOptionMenu",
+                    "hideMenuItems",
+                    "showMenuItems",
+                    "hideAllNonBaseMenuItem",
+                    "showAllNonBaseMenuItem",
+                    "closeWindow",
+                    "scanQRCode",
+                    "chooseWXPay",
+                    "openProductSpecificView",
+                    "addCard",
+                    "chooseCard",
+                    "openCard",
+                ]
+            });
+
+        },
+        "error": function (msg) {
+            for (var i in msg) {
+                alert(msg[i]);
+            }
+        }
+    });
+    wx.ready(function () {});
+
+
+</script>
+<script src="lib/md5.js"></script>
+<script src="lib/shade.js"></script>
+<script src="lib/limit.js"></script>
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260232169'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1260232169' type='text/javascript'%3E%3C/script%3E"));</script>
+</body>
+</html>
